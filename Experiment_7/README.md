@@ -1,78 +1,78 @@
-# Experiment 7: WPA2 Four-Way Handshake Analysis Using Wireshark
+# Experiment 7: Wireshark Analysis of a WPA2 EAPOL Handshake
 
-## Aim
-To capture and analyze the WPA2 four-way EAPOL handshake using Wireshark and identify the key information exchanged between an access point and a wireless client.
+## Objective
+To identify and examine the four EAPOL-Key frames involved in a WPA2 four-way handshake using an existing Wireshark capture.
 
-## Tools Used
+## Software / Capture
 - Wireshark
-- Provided PCAP capture: `Network_Join_Nokia_Mobile.pcap`
+- Capture file: `Network_Join_Nokia_Mobile.pcap`
 
-## Theory
-WPA2 uses a four-way EAPOL-Key handshake to establish session keys between the access point and client. The exchange uses nonces, replay counters, and MICs for secure key establishment.
+## Working Principle
+The WPA2 four-way handshake exchanges authentication and key-establishment information between an access point and a client. ANonce, SNonce, MIC and replay counters are used during the exchange.
 
-## Methodology
+## Procedure
 
-1. Open `Network_Join_Nokia_Mobile.pcap` in Wireshark.
-2. Apply the display filter:
+1. Open the supplied PCAP file in Wireshark.
+2. Filter the packets with:
    ```text
    eapol
    ```
-3. Identify the four EAPOL-Key messages.
-4. Select the following valid frames:
-   - Message 1: Frame 726
-   - Message 2: Frame 728
-   - Message 3: Frame 733
-   - Message 4: Frame 738
-5. Expand **802.1X Authentication → Key Descriptor** for each frame.
-6. Observe Key Information, Replay Counter, Nonce, and MIC.
-7. Compare the direction and parameters of the four messages.
-8. Verify completion of the four-way handshake.
+3. Locate the complete four-message EAPOL-Key sequence.
+4. For analysis, use frames **726, 728, 733 and 738**.
+5. Open the **802.1X Authentication** section of each selected packet.
+6. Inspect the **Key Information, Replay Counter, Nonce and MIC** fields.
+7. Note the sender and receiver for every message.
+8. Record the observed parameters in the results table.
 
-## Four-Way Handshake Flow
+## Handshake Sequence
 
 ```text
-        Access Point                     Client
-          Siemens                         Nokia
-             |                              |
-             |------ Message 1 ------------>|
-             |       ANonce                 |
-             |       Replay Counter: 0      |
-             |                              |
-             |<----- Message 2 -------------|
-             |       SNonce + MIC           |
-             |       Replay Counter: 0      |
-             |                              |
-             |------ Message 3 ------------>|
-             |       ANonce + MIC           |
-             |       Replay Counter: 1      |
-             |                              |
-             |<----- Message 4 -------------|
-             |       MIC                    |
-             |       Replay Counter: 1      |
-             |                              |
-             +------ Handshake Complete ----+
+             WPA2 KEY ESTABLISHMENT
+
+       Siemens / AP                 Nokia / Client
+             |                             |
+             |       M1: ANonce            |
+             |---------------------------->|
+             |                             |
+             |       M2: SNonce + MIC      |
+             |<----------------------------|
+             |                             |
+             |       M3: ANonce + MIC      |
+             |---------------------------->|
+             |                             |
+             |       M4: MIC               |
+             |<----------------------------|
+             |                             |
+             |          COMPLETE            |
 ```
 
-## Results
+## Packet Observations
 
-| Message | Frame | Direction | Replay Counter | Nonce | MIC |
-|---|---:|---|---:|---|---|
-| 1 of 4 | 726 | Siemens → Nokia | 0 | ANonce | Zero |
-| 2 of 4 | 728 | Nokia → Siemens | 0 | SNonce | Present |
-| 3 of 4 | 733 | Siemens → Nokia | 1 | ANonce | Present |
-| 4 of 4 | 738 | Nokia → Siemens | 1 | Zeroed | Present |
+| Frame | EAPOL Message | Direction | Key Information | Replay Counter | Nonce / MIC |
+|---:|---|---|---:|---:|---|
+| **726** | Message 1 of 4 | Siemens → Nokia | `0x0089` | 0 | ANonce, MIC zero |
+| **728** | Message 2 of 4 | Nokia → Siemens | `0x0109` | 0 | SNonce, MIC present |
+| **733** | Message 3 of 4 | Siemens → Nokia | `0x01c9` | 1 | ANonce, MIC present |
+| **738** | Message 4 of 4 | Nokia → Siemens | `0x0109` | 1 | Nonce zeroed, MIC present |
 
-The WPA Information Element in Frame 728 showed TKIP as the multicast and unicast cipher suite and PSK as the authentication/key-management method.
+### Additional Capture Detail
 
-## Discussion
-The PCAP contained all four EAPOL-Key messages of the WPA2 four-way handshake. The exchange demonstrated the use of ANonce, SNonce, MIC, and replay counters during key establishment.
+Frame **728** contained a WPA Information Element showing:
 
-## Output
-The WPA2 four-way handshake was successfully identified and analyzed in Wireshark from the provided PCAP capture.
+- Multicast cipher: **TKIP**
+- Unicast cipher: **TKIP**
+- Authentication / Key Management: **PSK**
 
-## Screenshots
-1. Wireshark `eapol` filter showing the four handshake messages.
-2. Frame 726: Message 1 of 4.
-3. Frame 728: Message 2 of 4.
-4. Frame 733: Message 3 of 4.
-5. Frame 738: Message 4 of 4.
+## Analysis
+The capture contains a complete four-message EAPOL-Key exchange. The access point begins the exchange with an ANonce, the client responds with an SNonce and MIC, and the final two messages confirm the key exchange.
+
+## Conclusion
+The WPA2 four-way handshake was successfully located and analyzed from the supplied PCAP file. The relevant EAPOL-Key frames and their security parameters were documented using Wireshark.
+
+## Evidence Screenshots
+
+- `eapol` filtered packet list
+- Frame 726: Message 1
+- Frame 728: Message 2
+- Frame 733: Message 3
+- Frame 738: Message 4

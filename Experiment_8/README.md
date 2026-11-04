@@ -1,4 +1,4 @@
-# Experiment 8 — OpenPGP Email in Thunderbird (Yaseen)
+# Experiment 8 — OpenPGP Email in Thunderbird
 
 ## Aim
 
